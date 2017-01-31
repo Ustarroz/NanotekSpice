@@ -5,6 +5,8 @@
 #ifndef CMAKE_BUILD_DEBUG_ICCOMPONENT_H
 #define CMAKE_BUILD_DEBUG_ICCOMPONENT_H
 
+#include <cstddef>
+
 namespace nts
 {
     enum Tristate

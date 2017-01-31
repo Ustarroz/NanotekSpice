@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.6)
-project(untitled1)
+project(nanotekspice)
 
 set(CMAKE_CXX_STANDARD 11)
+
+include_directories(include)
 
 set(SOURCE_FILES
         main.cpp
@@ -9,6 +11,9 @@ set(SOURCE_FILES
         src/parser.cpp
         src/tree.cpp)
 
-include_directories(include)
+set(INCLUDE_FILES
+        include/ICcomponent.h
+        include/parser.h
+        include/tree.h)
 
-add_executable(nanotekspice ${SOURCE_FILES})
+add_executable(nanotekspice ${SOURCE_FILES} ${INCLUDE_FILES})

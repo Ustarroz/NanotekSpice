@@ -40,8 +40,4 @@
  };
  }
 
-#endif CMAKE_BUILD_DEBUG_PARSER_H
-
-
-
 #endif //CMAKE_BUILD_DEBUG_PARSER_H
