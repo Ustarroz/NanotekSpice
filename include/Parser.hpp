@@ -14,7 +14,6 @@ namespace nts
   class Parser : public nts::IParser
   {
     std::string _input;
-    //Circuit *_circ;
    public:
     Parser();
 
