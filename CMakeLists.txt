@@ -7,12 +7,13 @@ include_directories(include)
 
 set(SOURCE_FILES
         main.cpp
-        src/ICcomponent.cpp
+        src/AComponent.cpp
         src/Parser.cpp
         src/tree.cpp)
 
 set(INCLUDE_FILES
         include/ICcomponent.hpp
+        include/AComponent.hpp
         include/IParser.hpp
         include/tree.hpp
         include/Parser.hpp src/Parser.cpp)
