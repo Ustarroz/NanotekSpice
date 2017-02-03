@@ -1,4 +1,4 @@
-//
+	//
 // Created by voyevoda on 31/01/17.
 //
 
@@ -24,7 +24,7 @@ namespace nts
   typedef struct s_ast_node
   {
     s_ast_node(std::vector<struct s_ast_node*> *children)
-	    : children(children) {}
+	    : children(children) {};
     std::string	        lexeme;
     ASTNodeType		type;
     std::string		value;
