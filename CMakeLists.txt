@@ -12,6 +12,9 @@ set(SOURCE_FILES
         src/tree.cpp
         src/Component4001.cpp
         src/Component4011.cpp
+        src/Component4030.cpp
+        src/Component4071.cpp
+        src/Component4081.cpp
         src/Gate.cpp)
 
 set(INCLUDE_FILES
@@ -23,6 +26,9 @@ set(INCLUDE_FILES
         src/Parser.cpp
         include/Component4001.hpp
         include/Component4011.hpp
+        include/Component4030.hpp
+        include/Component4071.hpp
+        include/Component4081.hpp
         include/Gate.hpp)
 
 add_executable(nanotekspice ${SOURCE_FILES} ${INCLUDE_FILES})
