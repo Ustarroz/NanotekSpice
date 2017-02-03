@@ -3,41 +3,62 @@
 //
 
 #include <iostream>
+#include <algorithm>
 #include "AComponent.hpp"
 
-nts::AComponent::AComponent(std::string const &name, size_t const &pins): _name(name), _pins(new std::vector<t_pin>)
+nts::AComponent::AComponent(std::string const &name): _name(name)
 {
+}
+
+nts::AComponent::AComponent(const nts::AComponent &cpy): _name(cpy._name)
+{
+  copy(cpy._pins->begin(), cpy._pins->end(), this->_pins->begin());
+}
+
+nts::AComponent &nts::AComponent::operator=(nts::AComponent &cpy)
+{
+  if (this == &cpy)
+    return (*this);
+  this->_name = cpy._name;
+  copy(cpy._pins->begin(), cpy._pins->end(), this->_pins->begin());
+  return (*this);
 }
 
 nts::AComponent::~AComponent()
 {
+  delete this->_pins;
 }
 
 bool nts::AComponent::CheckPin(size_t pin_num)
 {
-  for (std::vector<t_pin>::iterator it = this->_pins->begin(); it != this->_pins->end(); ++it)
-    {
-      if (it->pin_num == pin_num)
-	return true;
-    }
-  return false;
+  std::vector<t_pin>::iterator it;
+  it = find(this->_pins->begin(), this->_pins->end(), pin_num);
+  return (it != this->_pins->end());
 }
-
 
 void nts::AComponent::SetLink(size_t pin_num_this, nts::IComponent &component, size_t pin_num_target)
 {
   if ((static_cast<AComponent &>(component)).CheckPin(pin_num_target))
     return;
-  for (std::vector<t_pin>::iterator it = this->_pins->begin(); it != this->_pins->end(); ++it)
+  std::vector<t_pin>::iterator it;
+  it = find(this->_pins->begin(), this->_pins->end(), pin_num_this);
+  if (it != this->_pins->end())
     {
-      if (it->pin_num == pin_num_this)
-	{
-	  it->link_comp = component;
-	  it->linked = true;
-	  it->link_pin = pin_num_target;
-	  return;
-	}
+      it->link_comp = &component;
+      it->link_pin = pin_num_target;
     }
+}
+
+static void dump_pin(nts::t_pin pin)
+{
+  if (pin.type == nts::OUT)
+    std::cout << "pin: " << pin.pin_num << "; type: OUT; value : " << pin.value << ";";
+  else
+    std::cout << "pin: " << pin.pin_num << "; type: IN; value : " << pin.value << ";";
+  if (pin.link_comp)
+    std::cout << " link to pin " << pin.link_pin << " in component "
+	      << (static_cast<nts::AComponent *>(pin.link_comp))->getName();
+  std::cout << std::endl;
 }
 
 void nts::AComponent::Dump(void) const
@@ -45,20 +66,11 @@ void nts::AComponent::Dump(void) const
   std::cout << "Component: "
 	    << this->_name
 	    << std::endl;
-  for (std::vector<t_pin>::iterator it = this->_pins->begin(); it != this->_pins->end(); ++it)
-    {
-      if (it->type == nts::OUT)
-	std::cout << "pin: " << it->pin_num << "; type: OUT; value : " << it->value << ";";
-      else
-	std::cout << "pin: " << it->pin_num << "; type: IN; value : " << it->value << ";";
-      if (it->linked)
-	std::cout << " link to pin " << it->link_pin << " in component "
-		  << (static_cast<AComponent &>(it->link_comp)).getName();
-      std::cout << std::endl;
-    }
+  for_each(this->_pins->begin(), this->_pins->end(), &dump_pin);
 }
 
 std::string const &nts::AComponent::getName() const
 {
   return this->_name;
 }
+
