@@ -35,7 +35,7 @@ namespace nts
   {
    public:
     virtual ~IParser(){};
-    virtual void feed(std::__cxx11::string const& input) = 0;
+    virtual void feed(std::string const& input) = 0;
     virtual void parseTree(nts::t_ast_node& root) = 0;
     virtual nts::t_ast_node *createTree() = 0;
   };

@@ -15,14 +15,14 @@ namespace nts
   {
     std::string _input;
    public:
-    Parser(t_ast_node *root);;
+    Parser(t_ast_node *root);
 
     void feed(std::string const &input);
-
     void parseTree(nts::t_ast_node &root);
+      nts::t_ast_node *createTree();
 
-    nts::t_ast_node *createTree();
-
+    void lexer(std::string input);
+      void create_tree(std::string lexem, nts::ASTNodeType type, std::string value);
     t_ast_node *root;
   };
 }
