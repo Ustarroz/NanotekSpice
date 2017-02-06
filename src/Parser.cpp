@@ -72,12 +72,15 @@ void nts::Parser::feed(std::string const &strong)
 		  tmp->type = (ASTNodeType) 3;
 		else
 		  tmp->type = root->type;
+		std::vector<t_ast_node*>::iterator it = root->children->begin();
+		root->children->assign(0, tmp);
 	      }
 	      i = 0;
 	      std::string::size_type size;
 	      for(size = 0; size < input.length(); size++)
 		{
-		  tmp->lexeme.c_str()[i++] = input.c_str()[size];
+		  tmp->lexeme = input.substr(n);
+		  tmp->type = root->children[it];
 		}
 	      break;
 	    }
