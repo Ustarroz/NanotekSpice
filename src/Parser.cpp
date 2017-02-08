@@ -5,89 +5,23 @@
 #include <algorithm>
 #include "Parser.hpp"
 
-nts::Parser::Parser(t_ast_node *root)
+nts::Parser::Parser()
 {
-  t_ast_node tmp;
+  nts::t_ast_node *first;
 
-  tmp = new(sizeof(t_ast_node));
-  this->*root = tmp;
+  first = new nts::t_ast_node;
+  this->root = first;
 }
 
 void nts::Parser::feed(std::string const &strong)
 {
-  std::string::size_type n;
-  std::string::size_type space;
   std::string	input;
-  t_ast_node	*tmp;
-  int i = 0;
 
   input = strong;
-  tmp = new(t_ast_node);
   if (strong == "" || strong[0] == '#')
     return ;
   _input += "\n" + strong;
-    {
-      if (input[0] == ' ')
-	std::replace(input.begin(), input.end(), ' ', '');
-        std::replace(input.begin(), input.end(), '\t', '');
-      switch (input[0])
-	{
-	  case '.':
-	    {
-	     if ((n = input.find(".links:")) == (unsigned long) -1)
-	       return;
-	     else
-	       input.replace(n, 6, "");
-	       tmp->lexeme = ".links:";
-	       tmp->type = (ASTNodeType) 1;
-	       tmp->value = "";
-	       root->children->assign(0,tmp);
-	       root = tmp;
-	      if ((n = input.find(".chipset:")) == (unsigned long) -1)
-	    return;
-	  else
-	    	input.replace(n, 9, "");
-	      	tmp->lexeme = ".chipset:";
-	      	tmp->type = (ASTNodeType) 1;
-	      	tmp->value = "";
-	      	root->children->assign(0,tmp);
-	      	root = tmp;
-	      break;
-	    }
-	  case 'i':
-	    {
-	      if ((n = input.find("input")) == (unsigned long) -1)
-		{
-		  if ((space = input.find(" ")) == (unsigned long) -1)
-		    return;
-		}
-	      while (i != n)
-		tmp->lexeme += input.c_str()[i++];
-	      if (root->type == (ASTNodeType) 1);
-	      {
-		if (root->lexeme == ".chipset:")
-		  tmp->type = (ASTNodeType) 2;
-		if (root->lexeme == ".links:")
-		  tmp->type = (ASTNodeType) 3;
-		else
-		  tmp->type = root->type;
-		root->children->assign(0, tmp);
-	      }
-	      i = 0;
-	      std::string::size_type size;
-	      for(size = 0; size < input.length(); size++)
-		{
-            std::vector<t_ast_node *>::iterator it;
-            it = root->children->begin();
-		  tmp->lexeme = input.substr(n);
-		  tmp->type = root->children[it]->type;
-		}
-	      break;
-	    }
-	  default:
-	    break;
-	}
-    }
+   lexer(strong);
 }
 
 void nts::Parser::parseTree(nts::t_ast_node &root)
@@ -97,21 +31,19 @@ void nts::Parser::parseTree(nts::t_ast_node &root)
 
 nts::t_ast_node *nts::Parser::createTree()
 {
-  nts::t_ast_node *ret = nullptr;
+  //nts::t_ast_node *ret = nullptr;
 
   return this->root;
 }
 
 void nts::Parser::lexer(std::string input)
 {
-    std::string::size_type n;
-    std::string::size_type space;
-    t_ast_node	*tmp;
-    int i = 0;
+    std::string::size_type n = 0;
 
     if (input[0] == ' ')
         std::replace(input.begin(), input.end(), ' ', '');
     std::replace(input.begin(), input.end(), '\t', '');
+    std::replace(input.begin(), input.end(), '\n', '');
     switch (input[0])
     {
         case '.':
@@ -120,50 +52,78 @@ void nts::Parser::lexer(std::string input)
                 return;
             else
                 input.replace(n, 6, "");
-                create_tree(".links:", (ASTNodeType) 1, "");
-                root->children->assign(1, tmp);
-                root = tmp;
+                create_tree(".links:", (ASTNodeType) 1);
             if ((n = input.find(".chipset:")) == (unsigned long) -1)
                 return;
             else
                  input.replace(n, 9, "");
-                 create_tree(".chipset:", (ASTNodeType) 1, "");
-                 root->children->assign(1, tmp);
-                 root = tmp;
+                 create_tree(".chipset:", (ASTNodeType) 1);
             break;
         }
         case 'i':
         {
-            if ((n = input.find("input")) == (unsigned long) -1)
-            {
-                if ((space = input.find(" ")) == (unsigned long) -1)
-                    return;
-            }
             if (root->type == (ASTNodeType) 1);
             {
                 if (root->lexeme == ".chipset:")
-                    create_tree(input.substr(n, 5), (ASTNodeType) 2, "");
+                {
+                    //RESET CURSEUR
+                }
+                    create_tree(input.substr(n, 5), (ASTNodeType) 2);
+                }
                 if (root->lexeme == ".links:")
-                    create_tree(input.substr(n, 5), (ASTNodeType) 3, "");
-                else
-                create_tree(input.substr(n, 5), root->type, "");
-                root->children->assign(2, tmp);
-            }
-            create_tree(input.substr(space), root->type, "");
+                {
+                    // RESET CURSEUR
+                    create_tree(input.substr(n, 5), (ASTNodeType) 3);
+                }
             break;
-
         }
         default:
+        {
+            create_tree(input, root->type);
+        if (input.find(":") == -1)
+        {
+        create_tree(input.substr(0, input.find(" ")), root->type);
+            create_tree(input.substr(input.find("")), root->type);
+            //RESET CURSEUR VERS .CHIPSET
+        }
+            else
+            create_tree(input.substr(0, input.find(" ")), root->type);
+            create_tree(input.substr(input.find(" ")), root->type);
+            //RESET CURSEUR VERS .LINKS
+        }
             break;
     }
 }
-}
 
-void nts::Parser::create_tree(std::string lexem, nts::ASTNodeType type, std::string value)
+void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
 {
-    std::vector<t_ast_node *>::iterator it;
-    it = root->children->begin();
-    tmp->lexeme = input.substr(space);
-    tmp->type = (*it)->type;
+    nts::t_ast_node	                    *tmp = nullptr;
+    nts::t_ast_node                     *son = nullptr;
+    nts::t_ast_node                     *daughter = nullptr;
+
+    tmp ,son, daughter = new nts::t_ast_node;
+    if (lexeme.find(" ") != -1)
+    {
+        tmp->lexeme = lexeme;
+        tmp->type = type;
+    }
+    else
+    {
+        tmp->lexeme = lexeme;
+        if (root->lexeme == ".chipset:")
+            tmp->type = (ASTNodeType) 2;
+        if (root->lexeme == ".links")
+            tmp->type = (ASTNodeType) 3;
+        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() -1);
+        {
+            daughter->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
+        }
+        son->lexeme = lexeme.substr(0, lexeme.find(":"));
+        son->type = (ASTNodeType) 4;
+        daughter->lexeme = lexeme;
+        daughter->type = (ASTNodeType) 4;
+    }
+    root->children->push_back(tmp);
+    root = tmp;
 }
 
