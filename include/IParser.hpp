@@ -23,11 +23,11 @@ namespace nts
 
   typedef struct s_ast_node
   {
-    s_ast_node(std::vector<struct s_ast_node*> *children)
+    s_ast_node(std::vector<struct s_ast_node*> *children = nullptr)
 	    : children(children) {};
     std::string	        lexeme;
-    ASTNodeType		type;
-    std::string		value;
+    ASTNodeType		    type;
+    std::string		    value;
     std::vector<struct s_ast_node*>	*children;
   }		t_ast_node;
 
