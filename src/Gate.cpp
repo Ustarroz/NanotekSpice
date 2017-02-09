@@ -4,6 +4,29 @@
 
 #include "Gate.hpp"
 
+void nts::pushPin(std::vector <nts::t_pin> *_pins, size_t pin_in, nts::Pintype type)
+{
+  nts::t_pin pin;
+
+  pin.value = nts::UNDEFINED;
+  pin.link_comp = NULL;
+  pin.type = type;
+  pin.pin_num = pin_in;
+  _pins->push_back(pin);
+}
+
+void nts::pushPinInside(std::vector <nts::t_pin> *_pins, size_t pin_in, size_t pin_out, AComponent *component)
+{
+  nts::t_pin pin;
+
+  pin.value = nts::UNDEFINED;
+  pin.link_comp = component;
+  pin.link_pin = pin_out;
+  pin.type = IN;
+  pin.pin_num = pin_in;
+  _pins->push_back(pin);
+}
+
 void nts::pushTripletPin(std::vector <nts::t_pin> *_pins, size_t first_in, size_t second_in, size_t out)
 {
   nts::t_pin pin;

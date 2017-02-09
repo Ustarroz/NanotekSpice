@@ -9,6 +9,10 @@
 
 namespace nts
 {
+  void pushPin(std::vector <nts::t_pin> *_pins, size_t pin, nts::Pintype type);
+
+  void pushPinInside(std::vector <nts::t_pin> *_pins, size_t pin_in, size_t pin_out, AComponent *component);
+
   void pushTripletPin(std::vector<nts::t_pin> *_pins, size_t first_in, size_t second_in, size_t out);
 
   void pushDoublePin(std::vector<nts::t_pin> *_pins, size_t in, size_t out);

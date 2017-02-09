@@ -11,8 +11,10 @@ set(SOURCE_FILES
         src/Parser.cpp
         src/tree.cpp
         src/Component4001.cpp
+        src/Component4008.cpp
         src/Component4011.cpp
         src/Component4030.cpp
+        src/Component4069.cpp
         src/Component4071.cpp
         src/Component4081.cpp
         src/Gate.cpp)
@@ -25,8 +27,10 @@ set(INCLUDE_FILES
         include/Parser.hpp
         src/Parser.cpp
         include/Component4001.hpp
+        include/Component4008.hpp
         include/Component4011.hpp
         include/Component4030.hpp
+        include/Component4069.hpp
         include/Component4071.hpp
         include/Component4081.hpp
         include/Gate.hpp)
