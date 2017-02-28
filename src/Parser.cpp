@@ -22,21 +22,39 @@ void nts::Parser::feed(std::string const &strong)
    lexer(strong);
 }
 
+int nts::Parser::checker(nts::t_ast_node const &node, int i)
+{
+    if (!check)
+        check;
+    else
+        return -1;
+
+    if ((!node.children)[i]->check)
+        checker(node, i);
+    else if (node.children[++i] != NULL)
+    checker(node, ++i);
+}
+
 void nts::Parser::parseTree(nts::t_ast_node &root)
 {
-
+    if ((*root.children)[0]->lexeme != ".chipsets:"
+        && (*root.children)[1]->lexeme != ".links:"
+        || (*root.children)[0]->lexeme != ".links:"
+        && (*root.children)[1]->lexeme != ".chipset:")
+        throw;
+    if (root.lexeme == "" && root.value == "")
+        throw;
+    checker(root, 0);
 }
 
 nts::t_ast_node *nts::Parser::createTree()
 {
-
   return *root;
 }
 
 void nts::Parser::lexer(std::string input)
 {
     std::string::size_type n = 0;
-
     if (input[0] == ' ')
         input.erase(std::remove(input.begin(), input.end(), ' '), input.end());
     input.erase(std::remove(input.begin(), input.end(), '\t'), input.end());
@@ -97,27 +115,22 @@ void nts::Parser::lexer(std::string input)
     }
 }
 
-void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
-{
-    nts::t_ast_node	                    *tmp = new t_ast_node;
-    nts::t_ast_node                     *son = new t_ast_node;
-    nts::t_ast_node                     *daughter = new t_ast_node;
+void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type) {
+    nts::t_ast_node *tmp = new t_ast_node;
+    nts::t_ast_node *son = new t_ast_node;
+    nts::t_ast_node *daughter = new t_ast_node;
 
-    if (lexeme.find(" ") != -1)
-    {
+    if (lexeme.find(" ") != -1) {
         tmp->lexeme = lexeme;
         tmp->type = type;
-    }
-    else
-    {
+    } else {
         tmp->lexeme = lexeme;
         if (current->lexeme == ".chipset:")
             tmp->type = (ASTNodeType) 2;
         if (current->lexeme == ".links")
             tmp->type = (ASTNodeType) 3;
         //VERIFIER LES PROBLEMES DE PARENTHESES !
-        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() -1)
-        {
+        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1) {
             daughter->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
         }
         son->lexeme = lexeme.substr(0, lexeme.find(":"));
