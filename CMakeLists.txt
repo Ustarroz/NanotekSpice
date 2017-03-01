@@ -16,7 +16,8 @@ set(SOURCE_FILES
         src/Component4069.cpp
         src/Component4071.cpp
         src/Component4081.cpp
-        src/Gate.cpp)
+        src/Gate.cpp
+	src/Error.cpp)
 
 set(INCLUDE_FILES
         include/ICcomponent.hpp
@@ -31,6 +32,7 @@ set(INCLUDE_FILES
         include/Component4069.hpp
         include/Component4071.hpp
         include/Component4081.hpp
-        include/Gate.hpp)
+        include/Gate.hpp
+	include/Error.hpp)
 
 add_executable(nanotekspice ${SOURCE_FILES} ${INCLUDE_FILES})

@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include "Parser.hpp"
-
+#include "Error.hpp"
 nts::Parser::Parser()
 {
     this->current = new t_ast_node;
@@ -41,9 +41,9 @@ void nts::Parser::parseTree(nts::t_ast_node &root)
         && (*root.children)[1]->lexeme != ".links:"
         || (*root.children)[0]->lexeme != ".links:"
         && (*root.children)[1]->lexeme != ".chipset:")
-        throw;
+        throw Error("Lexer: Information file not complete", -1);
     if (root.lexeme == "" && root.value == "")
-        throw;
+        throw Error ("Lexer: Information file not complete", -1);
     checker(root, 0);
 }
 
@@ -129,10 +129,10 @@ void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type) {
             tmp->type = (ASTNodeType) 2;
         if (current->lexeme == ".links")
             tmp->type = (ASTNodeType) 3;
-        //VERIFIER LES PROBLEMES DE PARENTHESES !
-        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1) {
+        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1)
             daughter->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
-        }
+        else if ((lexeme.find ("(") != -1 && lexeme.find(")") > 0) || lexeme.find("(") > 0 && lexeme.find(")") == -1)
+            throw Error("Lexer: error, Synthax errror", -1);
         son->lexeme = lexeme.substr(0, lexeme.find(":"));
         son->type = (ASTNodeType) 4;
         daughter->lexeme = lexeme;
