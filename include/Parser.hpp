@@ -24,9 +24,7 @@ namespace nts
       void create_tree(std::string lexeme, nts::ASTNodeType type);
       t_ast_node **root;
       t_ast_node *current;
-      bool check = false;
-
-      int checker(const t_ast_node &node, int i);
+      int checker(t_ast_node &node, int i);
   };
 }
 

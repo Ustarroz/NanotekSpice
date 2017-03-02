@@ -9,13 +9,25 @@
 //
 #include <iostream>
 #include <fstream>
-
+#include <sstream>
+#include "Parser.hpp"
 int	main(int ac, char **av)
 {
     if (ac != 2)
-        std::ifstream file;
-    file.open(av[1]);
-    file.close();
-    std::string tmp;
-    while(std::getline(file, tmp)) {
-}
+    {
+        nts::t_ast_node *tree;
+        nts::Parser object;
+        std::ifstream file(av[1]);
+        std::string line;
+        while (std::getline(file, line))
+        {
+            std::istringstream ligne(line);
+            object.feed(ligne.str());
+        }
+        tree = object.createTree();
+        object.parseTree(tree);
+    }
+    else
+        std::cout << "Wrong usage: ./nanotekspice [config_file] attended" << std::endl;
+    return 0;
+    }

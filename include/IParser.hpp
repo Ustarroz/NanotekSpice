@@ -29,6 +29,7 @@ namespace nts
     ASTNodeType		    type;
     std::string		    value;
     std::vector<struct s_ast_node*>	*children;
+      bool              check = false;
   }		t_ast_node;
 
   class IParser

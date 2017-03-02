@@ -22,29 +22,31 @@ void nts::Parser::feed(std::string const &strong)
    lexer(strong);
 }
 
-int nts::Parser::checker(nts::t_ast_node const &node, int i)
+int nts::Parser::checker(nts::t_ast_node &node, int i)
 {
-    if (!check)
-        check;
+    if (!node.check)
+        node.check = true;
     else
         return -1;
-
-    if ((!node.children)[i]->check)
+    if (!(*node.children)[i]->check)
         checker(node, i);
-    else if (node.children[++i] != NULL)
-    checker(node, ++i);
+    else if (i < (*node.children).size())
+        checker(node, ++i);
+    else
+        throw Error("Error in parsing tree", -1);
+    return 0;
 }
 
 void nts::Parser::parseTree(nts::t_ast_node &root)
-{
-    if ((*root.children)[0]->lexeme != ".chipsets:"
-        && (*root.children)[1]->lexeme != ".links:"
-        || (*root.children)[0]->lexeme != ".links:"
-        && (*root.children)[1]->lexeme != ".chipset:")
-        throw Error("Lexer: Information file not complete", -1);
-    if (root.lexeme == "" && root.value == "")
-        throw Error ("Lexer: Information file not complete", -1);
-    checker(root, 0);
+    {
+        if (((*root.children)[0]->lexeme != ".chipsets:"
+            && (*root.children)[1]->lexeme != ".links:")
+            || ((*root.children)[0]->lexeme != ".links:"
+               && (*root.children)[1]->lexeme != ".chipset:"))
+            throw Error("Lexer: Information file not complete", -1);
+        if (root.lexeme == "" && root.value == "")
+            throw Error ("Lexer: Information file not complete", -1);
+        checker(root, 0);
 }
 
 nts::t_ast_node *nts::Parser::createTree()
@@ -131,7 +133,7 @@ void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type) {
             tmp->type = (ASTNodeType) 3;
         if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1)
             daughter->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
-        else if ((lexeme.find ("(") != -1 && lexeme.find(")") > 0) || lexeme.find("(") > 0 && lexeme.find(")") == -1)
+        else if ((lexeme.find ("(") != -1 && lexeme.find(")") > 0) || (lexeme.find("(") > 0 && lexeme.find(")") == -1))
             throw Error("Lexer: error, Synthax errror", -1);
         son->lexeme = lexeme.substr(0, lexeme.find(":"));
         son->type = (ASTNodeType) 4;

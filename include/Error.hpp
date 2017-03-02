@@ -22,6 +22,5 @@
         std::string getMessage() const;
         int         getIderror() const;
     };
-};
 
 #endif //NANOTEKSPICE_ERROR_H
