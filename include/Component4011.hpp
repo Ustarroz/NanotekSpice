@@ -11,8 +11,8 @@ namespace nts
 {
   class Component4011 : public nts::AComponent
   {
-    Component4011();
-    virtual nts::Tristate Compute(size_t pin_num_this = 1);
+   public:
+    Component4011(std::string const &name = "");
   };
 }
 

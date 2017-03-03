@@ -3,43 +3,13 @@
 //
 
 #include <algorithm>
-#include "Gate.hpp"
+#include "GateNAnd.hpp"
 #include "Component4011.hpp"
 
-nts::Component4011::Component4011() : AComponent("4011")
+nts::Component4011::Component4011(std::string const &name) : AComponent(name)
 {
-  pushTripletPin(this->_pins, 1, 2, 3);
-  pushTripletPin(this->_pins, 5, 6, 4);
-  pushTripletPin(this->_pins, 8, 9, 10);
-  pushTripletPin(this->_pins, 12, 13, 11);
-}
-
-nts::Tristate nts::Component4011::Compute(size_t pin_num_this)
-{
-  std::vector<t_pin>::iterator it;
-  nts::Tristate res;
-
-  it = find(this->_pins->begin(), this->_pins->end(), pin_num_this);
-  if (it == this->_pins->end())
-    return (UNDEFINED);
-  if (it->type == IN)
-    {
-      if (it->link_comp)
-	res = it->link_comp->Compute(it->link_pin);
-      else
-	res = UNDEFINED;
-    }
-  else
-    {
-      std::vector<t_pin>::iterator jt;
-      std::vector<t_pin>::iterator kt;
-
-      jt = it;
-      ++jt;
-      kt = jt;
-      ++kt;
-      res = gateNand(this->Compute(jt->link_pin),this->Compute(kt->link_pin));
-    }
-  it->value = res;
-  return (res);
+  this->_comp.push_back(new GateNAnd(1, 2, 3));
+  this->_comp.push_back(new GateNAnd(5, 6, 4));
+  this->_comp.push_back(new GateNAnd(8, 9, 10));
+  this->_comp.push_back(new GateNAnd(12, 13, 11));
 }

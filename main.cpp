@@ -8,7 +8,7 @@
 // Last update Thu Feb  2 15:20:49 2017 voyevoda
 //
 
-int	main(int ac, char **av)
+int	main()
 {
 
 }

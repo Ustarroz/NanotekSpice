@@ -30,7 +30,7 @@ namespace nts
     ///// Print on terminal the name of the component and
     //// the state of every pin of the current component
     /// The output won’t be tested, but it may help you
-    // as a trace.
+    /// as a trace.
     virtual void Dump(void) const = 0;
 
     virtual ~IComponent(void) { }

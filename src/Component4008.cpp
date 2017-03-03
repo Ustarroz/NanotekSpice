@@ -3,72 +3,43 @@
 //
 
 #include <algorithm>
-#include "Gate.hpp"
+#include "GateXor.hpp"
+#include "GateOr.hpp"
+#include "GateAnd.hpp"
 #include "Component4008.hpp"
 
-nts::Component4008::Component4008() : AComponent("4008")
+nts::Component4008::Component4008(std::string const &name) : AComponent(name)
 {
-  pushPin(this->_pins, 10, OUT);
-  pushPin(this->_pins, 161, OUT);
-  pushPin(this->_pins, 9, IN);
-  pushPin(this->_pins, 6, IN);
-  pushPin(this->_pins, 7, IN);
-
-  pushPin(this->_pins, 11, OUT);
-  pushPin(this->_pins, 171, OUT);
-  pushPinInside(this->_pins, 162, 161, this);
-  pushPin(this->_pins, 4, IN);
-  pushPin(this->_pins, 5, IN);
-
-  pushPin(this->_pins, 12, OUT);
-  pushPin(this->_pins, 181, OUT);
-  pushPinInside(this->_pins, 172, 171, this);
-  pushPin(this->_pins, 2, IN);
-  pushPin(this->_pins, 3, IN);
-
-  pushPin(this->_pins, 13, OUT);
-  pushPin(this->_pins, 14, OUT);
-  pushPinInside(this->_pins, 182, 181, this);
-  pushPin(this->_pins, 15, IN);
-  pushPin(this->_pins, 1, IN);
+  this->createFullAdder(6, 7, 9, 10, 100);
+  this->createFullAdder(4, 5, 100, 11, 110);
+  this->createFullAdder(2, 3, 110, 12, 120);
+  this->createFullAdder(15, 1, 120, 13, 14);
 }
 
-nts::Tristate nts::Component4008::Compute(size_t pin_num_this)
+void nts::Component4008::createFullAdder(size_t pin_a,
+					 size_t pin_b,
+					 size_t pin_c,
+					 size_t res,
+					 size_t carry_out)
 {
-  std::vector<t_pin>::iterator it;
-  std::vector<t_pin>::iterator jt;
-  std::vector<t_pin>::iterator kt;
-  std::vector<t_pin>::iterator lt;
-  nts::Tristate res;
+  GateXor *ab_xor_gate;
+  GateXor *res_xor_gate;
+  GateAnd *ab_and_gate;
+  GateAnd *res_and_gate;
+  GateOr *or_gate;
 
-  it = find(this->_pins->begin(), this->_pins->end(), pin_num_this);
-  if (it == this->_pins->end())
-    return (UNDEFINED);
-  if (it->type == IN)
-    {
-      if (it->link_comp)
-	res = it->link_comp->Compute(it->link_pin);
-      else
-	res = UNDEFINED;
-    }
-  else
-    {
-      jt = it;
-      ++jt;
-      if (it->pin_num < 14)
-	++jt;
-      kt = jt;
-      ++kt;
-      lt = kt;
-      ++lt;
-
-      if (it->pin_num < 14)
-      	res = gateXor(this->Compute(jt->link_pin), gateXor(this->Compute(kt->link_pin), this->Compute(lt->link_pin)));
-      else
-	res = gateOr(gateAnd(this->Compute(kt->link_pin), this->Compute(lt->link_pin)),
-		      gateAnd(this->Compute(jt->link_pin),
-			      gateXor(this->Compute(kt->link_pin), this->Compute(lt->link_pin))));
-    }
-  it->value = res;
-  return (res);
+  ab_xor_gate = new GateXor(pin_a, pin_b, res * 10 + 1);
+  res_xor_gate = new GateXor(res * 10 + 2, pin_c, res);
+  ab_and_gate = new GateAnd(pin_a, pin_b, res * 10 + 3);
+  res_and_gate = new GateAnd(res * 10 + 4, pin_c, res * 10 + 5);
+  or_gate = new GateOr(res * 10 + 6, res * 10 + 7, carry_out);
+  res_xor_gate->SetLink(res * 10 + 2, *ab_xor_gate, res * 10 + 1);
+  res_and_gate->SetLink(res * 10 + 4, *ab_xor_gate, res * 10 + 1);
+  or_gate->SetLink(res * 10 + 6, *res_and_gate, res * 10 + 5);
+  or_gate->SetLink(res * 10 + 7, *ab_and_gate, res * 10 + 3);
+  this->_comp.push_back(ab_xor_gate);
+  this->_comp.push_back(res_xor_gate);
+  this->_comp.push_back(ab_and_gate);
+  this->_comp.push_back(res_and_gate);
+  this->_comp.push_back(or_gate);
 }
