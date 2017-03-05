@@ -21,9 +21,9 @@ nts::Tristate nts::GateNXor::SubCompute(std::vector<t_pin>::iterator jt)
   nts::Tristate in_two;
 
   ++jt;
-  in_one = this->Compute(jt->link_pin);
+  in_one = this->Compute(jt->pin_num);
   ++jt;
-  in_two = this->Compute(jt->link_pin);
+  in_two = this->Compute(jt->pin_num);
   if (in_one == nts::UNDEFINED || in_two == nts::UNDEFINED)
     return (nts::UNDEFINED);
   if ((in_one == nts::FALSE && in_two == nts::FALSE) ||

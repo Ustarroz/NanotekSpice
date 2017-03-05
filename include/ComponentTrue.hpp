@@ -13,7 +13,7 @@ namespace nts
   {
    public:
 
-    ComponentTrue(std::string const &name = "", size_t pin_in = 0);
+    ComponentTrue(std::string const &name = "");
     virtual ~ComponentTrue();
 
     virtual void setValue(Tristate value);

@@ -5,17 +5,21 @@
 #ifndef NANOTEKSPICE_COMPONENTCLOCK_HPP
 #define NANOTEKSPICE_COMPONENTCLOCK_HPP
 
-#include "ASubComponent.hpp"
+#include "ComponentInput.hpp"
 
 namespace nts
 {
-  class ComponentClock : public nts::ASubComponent
+  class ComponentClock : public nts::ComponentInput
   {
+    bool _first;
     virtual nts::Tristate SubCompute(std::vector<t_pin>::iterator it);
    public:
 
-    ComponentClock(std::string const &name = "", size_t pin_out = 0);
+    ComponentClock(std::string const &name = "");
     virtual ~ComponentClock();
+
+    virtual void setValue(Tristate value);
+    virtual void reset();
   };
 };
 

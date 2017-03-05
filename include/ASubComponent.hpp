@@ -9,7 +9,7 @@
 
 namespace nts
 {
-  enum Pintype
+  enum PinType
   {
     OUT = 0,
     IN
@@ -18,12 +18,13 @@ namespace nts
   typedef struct s_pin
   {
     size_t pin_num;
-    Pintype type;
+    PinType type;
     Tristate value;
     IComponent *link_comp;
     size_t link_pin;
     bool done;
-    bool operator==(size_t pin_num) {
+    bool innerpin;
+    bool operator==(size_t pin_num) const {
       return (this->pin_num == pin_num);
     };
     struct s_pin & operator=(struct s_pin const &cpy) {
@@ -47,7 +48,7 @@ namespace nts
    public:
 
     ASubComponent(std::string const &name = "",
-		  size_t pin_in_one = 0,
+		  size_t pin_in_one = 1,
 		  size_t pin_in_two = SIZE_MAX,
 		  size_t pin_out = 2);
     ASubComponent(ASubComponent const & cpy);
@@ -56,7 +57,11 @@ namespace nts
     /// Compute value of the precised pin
     virtual nts::Tristate Compute(size_t pin_num_this = 1);
 
-    virtual bool CheckPin(size_t pin_num);
+    virtual bool CheckPin(size_t pin_num) const;
+
+    virtual bool CheckInnerPin(size_t pin_num) const;
+
+    virtual bool CheckPinOut(size_t pin_num) const;
 
     /// Useful to link IComponent together
     virtual void SetLink(size_t pin_num_this,
@@ -72,6 +77,8 @@ namespace nts
     virtual ASubComponent & operator=(ASubComponent & cpy);
 
     virtual void reset();
+
+    virtual void SetInner(size_t max_outter);
   };
 };
 

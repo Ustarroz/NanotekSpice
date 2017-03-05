@@ -14,10 +14,12 @@ namespace nts
     virtual Tristate SubCompute(std::vector<t_pin>::iterator it);
    public:
 
-    ComponentInput(std::string const &name = "", size_t pin_out = 0, Tristate value = UNDEFINED);
+    ComponentInput(std::string const &name = "");
     virtual ~ComponentInput();
 
     virtual void setValue(Tristate value);
+    virtual nts::Tristate Compute(size_t pin_num_this);
+    bool CheckValue() const;
   };
 };
 

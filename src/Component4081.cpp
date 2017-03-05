@@ -12,4 +12,5 @@ nts::Component4081::Component4081(std::string const &name) : AComponent(name)
   this->_comp.push_back(new GateAnd(5, 6, 4));
   this->_comp.push_back(new GateAnd(8, 9, 10));
   this->_comp.push_back(new GateAnd(12, 13, 11));
+  this->SetInner(13);
 }

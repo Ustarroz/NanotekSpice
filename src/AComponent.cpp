@@ -15,7 +15,7 @@ nts::AComponent::AComponent(const nts::AComponent &cpy): _name(cpy._name)
   std::copy(cpy._comp.begin(), cpy._comp.end(), this->_comp.begin());
 }
 
-nts::AComponent &nts::AComponent::operator=(nts::AComponent &cpy)
+nts::AComponent &nts::AComponent::operator=(nts::AComponent const &cpy)
 {
   if (this == &cpy)
     return (*this);
@@ -24,14 +24,19 @@ nts::AComponent &nts::AComponent::operator=(nts::AComponent &cpy)
   return (*this);
 }
 
-nts::AComponent::~AComponent()
+static void clearComp(nts::AComponent *comp)
 {
-  this->_comp.clear();
+  delete comp;
 }
 
-bool nts::AComponent::CheckPin(size_t pin_num)
+nts::AComponent::~AComponent()
 {
-  for (std::vector<nts::AComponent *>::iterator it = this->_comp.begin(); it != this->_comp.end(); ++it)
+  std::for_each(this->_comp.begin(), this->_comp.end(), &clearComp);
+}
+
+bool nts::AComponent::CheckPin(size_t pin_num) const
+{
+  for (std::vector<nts::AComponent *>::const_iterator it = this->_comp.begin(); it != this->_comp.end(); ++it)
     {
       if ((*it)->CheckPin(pin_num))
 	return (true);
@@ -39,13 +44,31 @@ bool nts::AComponent::CheckPin(size_t pin_num)
   return (false);
 }
 
+bool nts::AComponent::CheckPinOut(size_t pin_num) const
+{
+  for (std::vector<nts::AComponent *>::const_iterator it = this->_comp.begin(); it != this->_comp.end(); ++it)
+    {
+      if ((*it)->CheckPinOut(pin_num))
+	return (true);
+    }
+  return (false);
+}
+
+bool nts::AComponent::CheckInnerPin(size_t pin_num) const
+{
+  for (std::vector<nts::AComponent *>::const_iterator it = this->_comp.begin(); it != this->_comp.end(); ++it)
+    {
+      if ((*it)->CheckInnerPin(pin_num))
+	return (true);
+    }
+  return (false);
+}
+
 void nts::AComponent::SetLink(size_t pin_num_this, nts::IComponent &component, size_t pin_num_target)
 {
-  if ((static_cast<AComponent &>(component)).CheckPin(pin_num_target))
-    return;
   for (std::vector<nts::AComponent *>::iterator it = this->_comp.begin(); it != this->_comp.end(); ++it)
     {
-      if ((*it)->CheckPin(pin_num_this))
+      if ((*it)->CheckInnerPin(pin_num_this))
 	{
 	  (*it)->SetLink(pin_num_this, component, pin_num_target);
 	  return ;
@@ -75,7 +98,7 @@ nts::Tristate nts::AComponent::Compute(size_t pin_num_this)
 {
   for (std::vector<nts::AComponent *>::iterator it = this->_comp.begin(); it !=this->_comp.end(); ++it)
     {
-      if ((*it)->CheckPin(pin_num_this))
+      if ((*it)->CheckInnerPin(pin_num_this))
 	{
 	  return ((*it)->Compute(pin_num_this));
 	}
@@ -83,7 +106,7 @@ nts::Tristate nts::AComponent::Compute(size_t pin_num_this)
   return (nts::UNDEFINED);
 }
 
-void resetSubComp(nts::AComponent *comp)
+static void resetSubComp(nts::AComponent *comp)
 {
   comp->reset();
 }
@@ -91,4 +114,12 @@ void resetSubComp(nts::AComponent *comp)
 void nts::AComponent::reset()
 {
   std::for_each(this->_comp.begin(), this->_comp.end(), &resetSubComp);
+}
+
+void nts::AComponent::SetInner(size_t max_outter)
+{
+  for (std::vector<nts::AComponent *>::iterator it = this->_comp.begin(); it !=this->_comp.end(); ++it)
+    {
+      (*it)->SetInner(max_outter);
+    }
 }

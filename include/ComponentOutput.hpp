@@ -11,11 +11,16 @@ namespace nts
 {
   class ComponentOutput : public nts::ASubComponent
   {
+   protected:
     virtual Tristate SubCompute(std::vector<t_pin>::iterator it);
    public:
 
-    ComponentOutput(std::string const &name = "", size_t pin_in = 0);
+    ComponentOutput(std::string const &name = "");
     virtual ~ComponentOutput();
+    nts::Tristate getValue() const;
+    void simulate();
+
+    bool CheckLink() const;
   };
 };
 

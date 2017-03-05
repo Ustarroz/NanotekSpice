@@ -18,7 +18,7 @@ nts::Tristate nts::GateNot::SubCompute(std::vector<t_pin>::iterator jt)
   nts::Tristate in;
 
   ++jt;
-  in = this->Compute(jt->link_pin);
+  in = this->Compute(jt->pin_num);
   if (in == nts::UNDEFINED)
     return (nts::UNDEFINED);
   return (in == nts::TRUE ? nts::FALSE : nts::TRUE);

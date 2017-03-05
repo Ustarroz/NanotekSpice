@@ -15,8 +15,8 @@ namespace nts
    public:
 
     GateAnd(size_t pin_in_one = 0,
-	   size_t pin_in_two = 1,
-	   size_t pin_out = 2);
+	    size_t pin_in_two = 1,
+	    size_t pin_out = 2);
     virtual ~GateAnd();
   };
 };

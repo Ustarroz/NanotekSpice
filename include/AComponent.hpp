@@ -24,7 +24,11 @@ namespace nts
     /// Compute value of the precised pin
     virtual nts::Tristate Compute(size_t pin_num_this = 1);
 
-    virtual bool CheckPin(size_t pin_num);
+    virtual bool CheckPin(size_t pin_num) const;
+
+    virtual bool CheckInnerPin(size_t pin_num) const;
+
+    virtual bool CheckPinOut(size_t pin_num) const;
 
     /// Useful to link IComponent together
     virtual void SetLink(size_t pin_num_this,
@@ -39,9 +43,11 @@ namespace nts
 
     std::string const &getName() const;
 
-    AComponent & operator=(AComponent & cpy);
+    AComponent & operator=(AComponent const & cpy);
 
     virtual void reset();
+
+    virtual void SetInner(size_t max_outter);
   };
 };
 

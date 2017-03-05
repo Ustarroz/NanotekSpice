@@ -55,6 +55,6 @@ set(INCLUDE_FILES
         include/ComponentInput.hpp
         include/ComponentOutput.hpp
         include/ComponentTrue.hpp
-        include/ComponentFalse.hpp)
+        include/ComponentFalse.hpp include/Circuit.hpp src/Circuit.cpp)
 
 add_executable(nanotekspice ${SOURCE_FILES} ${INCLUDE_FILES})
