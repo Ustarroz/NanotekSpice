@@ -19,6 +19,10 @@ namespace nts
    public:
 
     Parser();
+    Parser(const Parser &other);
+    ~Parser();
+    Parser& operator=(const Parser &other);
+
     void feed(std::string const &input);
     void parseTree(nts::t_ast_node &root);
     nts::t_ast_node *createTree();
@@ -27,6 +31,9 @@ namespace nts
     std::vector<struct s_ast_node*> * create_links(std::string lexeme, nts::ASTNodeType type);
     std::vector<struct s_ast_node*> * create_components(std::string lexeme, nts::ASTNodeType type);
     unsigned int checker(t_ast_node &node, unsigned int i);
+    t_ast_node * getRoot() const;
+    t_ast_node * getCurrent() const;
+    std::vector<std::string> getComponent() const;
   };
 }
 

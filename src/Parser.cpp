@@ -1,6 +1,7 @@
 // Created by puilla_e on 01/02/17.
 //
 #include <iostream>
+#include <locale>
 #include <algorithm>
 #include "Parser.hpp"
 #include "Error.hpp"
@@ -23,23 +24,23 @@ void nts::Parser::feed(std::string const &strong)
 
 unsigned int nts::Parser::checker(nts::t_ast_node &node, unsigned int i)
 {
-    if (!node.check)
-        node.check = true;
-    else
-        throw Error("An unexpected error as occured", 1);
-    if (node.type == nts::ASTNodeType::COMPONENT)
+  if (!node.check)
+    node.check = true;
+  else
+    throw Error("An unexpected error as occured", 1);
+  if (node.type == nts::ASTNodeType::COMPONENT)
     {
-        int j = 0;
-        for (std::vector<std::string>::iterator it = component_name.begin(); it != component_name.end(); ++it)
-	  {
-	    if (*it == (*node.children)[1]->lexeme)
-	      j++;
-	  }
-        if (j >= 2)
-            throw Error("Lexeme: Same component name used twice", -1);
+      int j = 0;
+      for (std::vector<std::string>::iterator it = component_name.begin(); it != component_name.end(); ++it)
+	{
+	  if (*it == (*node.children)[1]->lexeme)
+	    j++;
+	}
+      if (j >= 2)
+	throw Error("Lexeme: Same component name used twice", -1);
     }
+  (void) i;
   unsigned int j = 0;
-  std::cout<< node.lexeme <<  " i = " << i <<std::endl;
 
   while (((node.children) != NULL) && j < (*node.children).size() && !(*node.children)[j]->check)
     {
@@ -156,6 +157,8 @@ std::vector<struct nts::s_ast_node*> * nts::Parser::create_links(std::string lex
   t_ast_node *node;
   std::string substr;
   size_t pos;
+  std::locale loc;
+  unsigned int i = 0;
 
   switch (type)
     {
@@ -187,6 +190,12 @@ std::vector<struct nts::s_ast_node*> * nts::Parser::create_links(std::string lex
 	  node->type = ASTNodeType::STRING;
 	  tmp->push_back(node);
 	  substr = lexeme.substr(pos + 1);
+	  while (i < substr.size())
+	    {
+	      if (!isdigit(substr[i],loc))
+		throw Error("Wrong link value", -1);
+	      i++;
+	    }
 	  node = new t_ast_node(create_links(substr, ASTNodeType::STRING));
 	  node->lexeme = substr;
 	  node->type = ASTNodeType::STRING;
@@ -242,4 +251,39 @@ void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
   node->lexeme = lexeme;
   node->type = type;
   node->value = "";
+}
+
+nts::Parser::Parser(const nts::Parser &other)
+{
+  root = other.getRoot();
+  current = other.getCurrent();
+  component_name = getComponent();
+}
+nts::Parser::~Parser()
+{
+
+}
+nts::Parser& nts::Parser::operator=(const nts::Parser &other)
+{
+  root = other.getRoot();
+  current = other.getCurrent();
+  component_name = getComponent();
+  return *this;
+}
+
+nts::t_ast_node * nts::Parser::getRoot() const
+{
+  return root;
+}
+
+nts::t_ast_node * nts::Parser::getCurrent() const
+{
+  return current;
+}
+
+std::vector<std::string> nts::Parser::getComponent() const
+{
+  std::vector<std::string> copy;
+  copy = component_name;
+  return copy;
 }
