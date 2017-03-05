@@ -5,25 +5,19 @@
 ## Login   <voyevoda@epitech.net>
 ## 
 ## Started on  Mon Jan  9 19:18:13 2017 voyevoda
-## Last update Sun Mar  5 22:01:41 2017 puilla_e
+## Last update Mon Mar  6 00:42:21 2017 puilla_e
 ##
 
 CC	= g++
 
 RM	= rm -f
 
-CPPFLAG =  -Wall -Wextra -Werror
+CPPFLAGS =  -Wall -Wextra -Werror -std=c++11
+CPPFLAGS += -I./include
 
-SRC	= main.cpp \
-	  src/AComponent.cpp \
+SRC	= src/AComponent.cpp main.cpp \
+	  src/Error.cpp	\
 	  src/Parser.cpp \
-	  src/Component4001.cpp \
-	  src/Component4008.cpp \
-	  src/Component4011.cpp \
-	  src/Component4030.cpp \
-	  src/Component4069.cpp \
-	  src/Component4071.cpp \
-	  src/Component4081.cpp \
 	  src/ASubComponent.cpp \
 	  src/GateOr.cpp \
 	  src/GateAnd.cpp \
@@ -32,12 +26,21 @@ SRC	= main.cpp \
 	  src/GateNOr.cpp \
 	  src/GateNAnd.cpp \
 	  src/GateNXor.cpp \
-	  src/ComponentClock.cpp \
 	  src/ComponentInput.cpp \
+	  src/ComponentClock.cpp \
 	  src/ComponentOutput.cpp \
 	  src/ComponentTrue.cpp \
 	  src/ComponentFalse.cpp \
-	  src/Error.cpp
+	  src/Component4001.cpp \
+	  src/Component4008.cpp \
+	  src/Component4011.cpp \
+	  src/Component4030.cpp \
+	  src/Component4069.cpp \
+	  src/Component4071.cpp \
+	  src/Component4081.cpp	\
+	  src/Circuit.cpp \
+	  src/GateNull.cpp
+
 
 NAME	= nanotekspice
 
