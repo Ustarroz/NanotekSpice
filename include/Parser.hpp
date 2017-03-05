@@ -15,8 +15,7 @@ namespace nts
   {
     t_ast_node *root;
     t_ast_node *current;
-
-
+    std::vector<std::string> component_name;
    public:
 
     Parser();

@@ -10,7 +10,8 @@ nts::Parser::Parser()
   this->root = new t_ast_node;
   this->current = root;
   current->children = new std::vector<nts::t_ast_node *>;
-  this->root->type = (ASTNodeType) -1;
+  this->root->type = nts::ASTNodeType::DEFAULT;
+
 }
 
 void nts::Parser::feed(std::string const &strong)
@@ -22,11 +23,23 @@ void nts::Parser::feed(std::string const &strong)
 
 int nts::Parser::checker(nts::t_ast_node &node, int i)
 {
+    if (!node.check)
+        node.check = true;
+    else
+        throw Error("An unexpected error as occured", 1);
+    if (node.type == nts::ASTNodeType::COMPONENT)
+    {
+        int j = 0;
+        std::vector<std::string>::iterator it;
+        it = component_name.begin();
+        while (it != component_name.end())
+            if (*it == (*node.children)[1]->lexeme)
+                j++;
+        if (j >= 2)
+            throw Error("Lexeme: Same component name used twice", -1);
+    }
   std::cout<< node.lexeme <<  " i = " << i <<std::endl;
-  if (!node.check)
-    node.check = true;
-  else
-    return -1;
+
   if (((node.children) != NULL) && !(*node.children)[i]->check)
     checker((*(*node.children)[i]), i);
   else if (node.children!= NULL && i + 1 <= (*node.children).size() && !(*node.children)[i + 1]->check)
@@ -117,6 +130,7 @@ std::vector<struct s_ast_node*> * nts::Parser::create_components(std::string lex
 	  node->type = ASTNodeType::STRING;
 	  tmp->push_back(node);
 	  substr = lexeme.substr(pos + 1);
+        component_name.push_back(substr);
 	  node = new t_ast_node(create_links(substr, ASTNodeType::STRING));
 	  node->lexeme = substr;
 	  node->type = ASTNodeType::STRING;
