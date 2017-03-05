@@ -11,8 +11,9 @@ namespace nts
 {
   class Component4008 : public nts::AComponent
   {
-    Component4008();
-    virtual nts::Tristate Compute(size_t pin_num_this = 1);
+    void createFullAdder(size_t pin_a, size_t pin_b, size_t pin_c, size_t res, size_t carry_out);
+   public:
+    Component4008(std::string const &name = "");
   };
 }
 
