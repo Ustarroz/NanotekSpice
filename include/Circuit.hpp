@@ -56,6 +56,8 @@ namespace nts
     void createComp(std::string const &comp, std::string const & name);
     void setLink(std::string const &comp_in, size_t pin_in, std::string const & comp_out, size_t pin_out);
     AComponent *findComponent(std::string const & name);
+    void createComponents(nts::t_ast_node *comp);
+    void createLinks(nts::t_ast_node *links);
    public:
     Circuit(nts::t_ast_node *root);
     Circuit(Circuit const &cpy);

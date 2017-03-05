@@ -22,7 +22,6 @@ bool end_loop = false;
 
 nts::Circuit::Circuit(nts::t_ast_node *root)
 {
-  (void) root;
   this->_cmd[EXIT] = "exit";
   this->_cmd[DISPLAY] = "display";
   this->_cmd[SIMULATE] = "simulate";
@@ -43,16 +42,36 @@ nts::Circuit::Circuit(nts::t_ast_node *root)
   this->_typecomp[COMP_4081] = "4081";
 
   this->_started = false;
-  createComp("input", "i0");
-  createComp("input", "i1");
-  createComp("input", "i2");
-  createComp("4081", "and0");
-  createComp("output", "out");
-  setLink("i0", 1, "and0", 1);
-  setLink("i1", 1, "and0", 2);
-  setLink("and0", 3, "and0", 5);
-  setLink("i2", 1, "and0", 6);
-  setLink("and0", 4, "out", 1);
+
+  if ((*root->children)[1]->lexeme == ".links:")
+    {
+      createComponents((*root->children)[0]);
+      createLinks((*root->children)[1]);
+    }
+  else
+    {
+      createComponents((*root->children)[1]);
+      createLinks((*root->children)[0]);
+    }
+}
+
+void nts::Circuit::createComponents(nts::t_ast_node *comp)
+{
+  for (std::vector<nts::t_ast_node *>::iterator it = comp->children->begin(); it != comp->children->end(); ++it)
+    {
+      createComp((*(*it)->children)[0]->lexeme,(*(*it)->children)[1]->lexeme);
+    }
+}
+
+void nts::Circuit::createLinks(nts::t_ast_node *links)
+{
+  for (std::vector<nts::t_ast_node *>::iterator it = links->children->begin(); it != links->children->end(); ++it)
+    {
+      setLink((*(*(*it)->children)[0]->children)[0]->lexeme,
+	      atoi((*(*(*it)->children)[0]->children)[1]->lexeme),
+	      (*(*(*it)->children)[1]->children)[0]->lexeme,
+	      atoi((*(*(*it)->children)[1]->children)[1]->lexeme));
+    }
 }
 
 nts::Circuit::Circuit(Circuit const &cpy)
