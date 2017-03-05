@@ -46,6 +46,7 @@ namespace nts
     std::vector<nts::ComponentInput *> _in;
     std::string _cmd[NB_COMMAND];
     std::string _typecomp[NB_COMPONENT];
+    bool _started;
 
     void reset();
     void display() const;
@@ -61,7 +62,7 @@ namespace nts
     ~Circuit();
     Circuit &operator=(Circuit const &cpy);
     void setInput(std::string const & input);
-    void checkCircuit() const;
+    void checkCircuit();
     bool execute_command(std::string const & cmd);
   };
 }

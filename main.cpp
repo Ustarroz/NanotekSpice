@@ -8,8 +8,8 @@
 // Last update Thu Feb  2 15:20:49 2017 voyevoda
 //
 
-/* Main to try circuit
-#include <iostream>
+// Main to try circuit
+/*#include <iostream>
 #include "Circuit.hpp"
 
 int	main(int ac, char **av)

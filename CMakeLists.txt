@@ -9,7 +9,7 @@ include_directories(include)
 set(SOURCE_FILES
         main.cpp
         src/AComponent.cpp
-        src/Parser.cpp
+        ##src/Parser.cpp
         src/Component4001.cpp
         src/Component4008.cpp
         src/Component4011.cpp

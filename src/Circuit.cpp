@@ -41,6 +41,8 @@ nts::Circuit::Circuit(nts::t_ast_node *root)
   this->_typecomp[COMP_4069] = "4069";
   this->_typecomp[COMP_4071] = "4071";
   this->_typecomp[COMP_4081] = "4081";
+
+  this->_started = false;
   createComp("input", "i0");
   createComp("input", "i1");
   createComp("input", "i2");
@@ -124,7 +126,10 @@ void nts::Circuit::setInput(std::string const & input)
   if ((pos = input.find_first_of('=')) == std::string::npos)
     {
       std::cerr << "Error: '" << input << "' is an incorrect command" << std::endl;
-      throw Error("Circuit: command error", -1);
+      if (_started)
+	return ;
+      else
+	throw Error("Circuit: command error", -1);
     }
   name = input.substr(0, pos);
   value_str = input.substr(pos + 1);
@@ -137,7 +142,10 @@ void nts::Circuit::setInput(std::string const & input)
   if (it == this->_in.end())
     {
       std::cerr << "Error: '" << name << "' is an incorrect input" << std::endl;
-      throw Error("Circuit: input error", -1);
+      if (_started)
+	return ;
+      else
+	throw Error("Circuit: input error", -1);
     }
 
   if (value_str == "1")
@@ -147,7 +155,10 @@ void nts::Circuit::setInput(std::string const & input)
   else
     {
       std::cerr << "Error: '" << value_str << "' is an incorrect value" << std::endl;
-      throw Error("Circuit: input error", -1);
+      if (_started)
+	return ;
+      else
+	throw Error("Circuit: input error", -1);
     }
   (*it)->setValue(value);
 }
@@ -396,8 +407,9 @@ static void check_input(nts::ComponentInput *in)
   throw Error("Circuit: input error", -1);
 }
 
-void nts::Circuit::checkCircuit() const
+void nts::Circuit::checkCircuit()
 {
   std::for_each(this->_in.begin(), this->_in.end(), &check_input);
   std::for_each(this->_out.begin(), this->_out.end(), &check_output);
+  this->_started = true;
 }
