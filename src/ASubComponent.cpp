@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include "Error.hpp"
 #include "ASubComponent.hpp"
 
 nts::ASubComponent::ASubComponent(std::string const &name,
@@ -84,14 +85,14 @@ void nts::ASubComponent::SetLink(size_t pin_num_this, nts::IComponent &component
       std::cerr << "Error: can't link pin " << pin_num_this
 		<< " of '" << this->_name
 		<< "' : non-existing pin!" << std::endl;
-      return ;
+      throw Error("Circuit: link error", -1);
     }
   else if (!(static_cast<AComponent &>(component)).CheckInnerPin(pin_num_target))
     {
       std::cerr << "Error: can't link pin " << pin_num_target
 	      	<< " of '" << (static_cast<AComponent &>(component)).getName()
 		<< "' : non-existing pin!" << std::endl;
-      return ;
+      throw Error("Circuit: link error", -1);
     }
 
   type_out = (static_cast<AComponent &>(component)).CheckPinOut(pin_num_target);
@@ -104,6 +105,7 @@ void nts::ASubComponent::SetLink(size_t pin_num_this, nts::IComponent &component
 		<< "' to the pin " << pin_num_target
 		<< " of '" << (static_cast<AComponent &>(component)).getName()
 		<< "' : trying to link two pin OUT!" << std::endl;
+      throw Error("Circuit: link error", -1);
     }
   else if (!type_out)
     {
@@ -112,6 +114,7 @@ void nts::ASubComponent::SetLink(size_t pin_num_this, nts::IComponent &component
 		<< "' to the pin " << pin_num_target
 		<< " of '" << (static_cast<AComponent &>(component)).getName()
 		<< "' : trying to link two pin IN!" << std::endl;
+      throw Error("Circuit: link error", -1);
     }
   (*it).link_pin = pin_num_target;
   (*it).link_comp = &component;

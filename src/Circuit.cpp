@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <signal.h>
+#include "Error.hpp"
 #include "Component4081.hpp"
 #include "Component4071.hpp"
 #include "Component4069.hpp"
@@ -123,7 +124,7 @@ void nts::Circuit::setInput(std::string const & input)
   if ((pos = input.find_first_of('=')) == std::string::npos)
     {
       std::cerr << "Error: '" << input << "' is an incorrect command" << std::endl;
-      return ;
+      throw Error("Circuit: command error", -1);
     }
   name = input.substr(0, pos);
   value_str = input.substr(pos + 1);
@@ -136,7 +137,7 @@ void nts::Circuit::setInput(std::string const & input)
   if (it == this->_in.end())
     {
       std::cerr << "Error: '" << name << "' is an incorrect input" << std::endl;
-      return ;
+      throw Error("Circuit: input error", -1);
     }
 
   if (value_str == "1")
@@ -146,7 +147,7 @@ void nts::Circuit::setInput(std::string const & input)
   else
     {
       std::cerr << "Error: '" << value_str << "' is an incorrect value" << std::endl;
-      return;
+      throw Error("Circuit: input error", -1);
     }
   (*it)->setValue(value);
 }
@@ -318,6 +319,7 @@ void nts::Circuit::createComp(std::string const &comp, std::string const & name)
       default:
 	{
 	  std::cerr << "Error: '" << comp << "' is an incorrect component" << std::endl;
+	  throw Error("Circuit: component error", -1);
 	}
     }
 }
@@ -346,6 +348,7 @@ nts::AComponent *nts::Circuit::findComponent(std::string const & name)
 	}
     }
   std::cerr << "Error: '" << name << "' is an unknown component" << std::endl;
+  throw Error("Circuit: component error", -1);
   return (NULL);
 }
 
@@ -363,14 +366,14 @@ void nts::Circuit::setLink(std::string const &name_comp_in, size_t pin_in,
       std::cerr << "Error: can't link pin " << pin_in
 		<< " of '" << comp_in->getName()
 		<< "' : non-existing pin!" << std::endl;
-      return ;
+      throw Error("Circuit: link error", -1);
     }
   if (!comp_out->CheckPin(pin_out))
     {
       std::cerr << "Error: can't link pin " << pin_out
 		<< " of '" << comp_out->getName()
 		<< "' : non-existing pin!" << std::endl;
-      return ;
+      throw Error("Circuit: link error", -1);
     }
 
   comp_in->SetLink(pin_in, *comp_out, pin_out);
@@ -382,6 +385,7 @@ static void check_output(nts::ComponentOutput *out)
   if (out->CheckLink())
     return;
   std::cerr << "Error: output '" << out->getName() << "' is not linked" << std::endl;
+  throw Error("Circuit: output error", -1);
 }
 
 static void check_input(nts::ComponentInput *in)
@@ -389,6 +393,7 @@ static void check_input(nts::ComponentInput *in)
   if (in->CheckValue())
     return;
   std::cerr << "Error: input '" << in->getName() << "' is undefined" << std::endl;
+  throw Error("Circuit: input error", -1);
 }
 
 void nts::Circuit::checkCircuit() const
