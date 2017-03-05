@@ -13,7 +13,8 @@ namespace nts
 {
   class Parser : public nts::IParser
   {
-    std::string _input;
+        t_ast_node *root;
+      t_ast_node *current;
    public:
 
       Parser();
@@ -22,8 +23,6 @@ namespace nts
       nts::t_ast_node *createTree();
       void lexer(std::string input);
       void create_tree(std::string lexeme, nts::ASTNodeType type);
-      t_ast_node **root;
-      t_ast_node *current;
       int checker(t_ast_node &node, int i);
   };
 }

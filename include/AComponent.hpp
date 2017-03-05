@@ -32,7 +32,7 @@ namespace nts
       this->type = cpy.type;
       this->value = cpy.value;
       this->link_comp = cpy.link_comp;
-s      this->link_pin = cpy.link_pin;
+      this->link_pin = cpy.link_pin;
     };
   } t_pin;
 
