@@ -1,7 +1,7 @@
 // Created by puilla_e on 01/02/17.
 //
 #include <iostream>
-#include <algorithm>
+#include <locale>
 #include "Parser.hpp"
 #include "Error.hpp"
 
@@ -146,12 +146,16 @@ std::vector<struct s_ast_node*> * nts::Parser::create_components(std::string lex
   return (tmp);
 }
 
+
+
 std::vector<struct s_ast_node*> * nts::Parser::create_links(std::string lexeme, nts::ASTNodeType type)
 {
   std::vector<struct s_ast_node*> *tmp;
   t_ast_node *node;
   std::string substr;
   size_t pos;
+    std::locale loc;
+    int i = 0;
 
   switch (type)
     {
@@ -183,6 +187,9 @@ std::vector<struct s_ast_node*> * nts::Parser::create_links(std::string lexeme, 
 	  node->type = ASTNodeType::STRING;
 	  tmp->push_back(node);
 	  substr = lexeme.substr(pos + 1);
+    while ((isdigit(substr[i++],loc) == true));
+        if (i < substr.size())
+            throw Error("Wrong link value", -1);
 	  node = new t_ast_node(create_links(substr, ASTNodeType::STRING));
 	  node->lexeme = substr;
 	  node->type = ASTNodeType::STRING;
@@ -194,6 +201,11 @@ std::vector<struct s_ast_node*> * nts::Parser::create_links(std::string lexeme, 
 	  tmp = nullptr;
 	  break;
 	}
+        case ASTNodeType::DEFAULT:break;
+        case ASTNodeType::NEWLINE:break;
+        case ASTNodeType::SECTION:break;
+        case ASTNodeType::COMPONENT:break;
+        case ASTNodeType::STRING:break;
     }
   return (tmp);
 }
@@ -237,4 +249,39 @@ void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
   node->lexeme = lexeme;
   node->type = type;
   node->value = "";
+}
+
+nts::Parser::Parser(const nts::Parser &other)
+{
+    root = other.getRoot();
+    current = other.getCurrent();
+    component_name = getComponent();
+}
+nts::Parser::~Parser()
+{
+
+}
+nts::Parser& nts::Parser::operator=(const nts::Parser &other)
+{
+    root = other.getRoot();
+    current = other.getCurrent();
+    component_name = getComponent();
+    return *this;
+}
+
+nts::t_ast_node * nts::Parser::getRoot() const
+{
+    return root;
+}
+
+nts::t_ast_node * nts::Parser::getCurrent() const
+{
+    return current;
+}
+
+std::vector<std::string> nts::Parser::getComponent() const
+{
+    std::vector<std::string> copy;
+    copy = component_name;
+    return copy;
 }
