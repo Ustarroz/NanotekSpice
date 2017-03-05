@@ -68,9 +68,9 @@ void nts::Circuit::createLinks(nts::t_ast_node *links)
   for (std::vector<nts::t_ast_node *>::iterator it = links->children->begin(); it != links->children->end(); ++it)
     {
       setLink((*(*(*it)->children)[0]->children)[0]->lexeme,
-	      atoi((*(*(*it)->children)[0]->children)[1]->lexeme),
+	      (size_t) atol((*(*(*it)->children)[0]->children)[1]->lexeme.c_str()),
 	      (*(*(*it)->children)[1]->children)[0]->lexeme,
-	      atoi((*(*(*it)->children)[1]->children)[1]->lexeme));
+	      (size_t) atoi((*(*(*it)->children)[1]->children)[1]->lexeme.c_str()));
     }
 }
 

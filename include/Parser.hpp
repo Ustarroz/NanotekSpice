@@ -22,11 +22,11 @@ namespace nts
     void feed(std::string const &input);
     void parseTree(nts::t_ast_node &root);
     nts::t_ast_node *createTree();
-    void lexer(std::string input);
+    void lexer(std::string const & input);
     void create_tree(std::string lexeme, nts::ASTNodeType type);
     std::vector<struct s_ast_node*> * create_links(std::string lexeme, nts::ASTNodeType type);
     std::vector<struct s_ast_node*> * create_components(std::string lexeme, nts::ASTNodeType type);
-    int checker(t_ast_node &node, int i);
+    unsigned int checker(t_ast_node &node, unsigned int i);
   };
 }
 

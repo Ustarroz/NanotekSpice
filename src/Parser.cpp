@@ -21,7 +21,7 @@ void nts::Parser::feed(std::string const &strong)
   lexer(strong);
 }
 
-int nts::Parser::checker(nts::t_ast_node &node, int i)
+unsigned int nts::Parser::checker(nts::t_ast_node &node, unsigned int i)
 {
     if (!node.check)
         node.check = true;
@@ -30,20 +30,22 @@ int nts::Parser::checker(nts::t_ast_node &node, int i)
     if (node.type == nts::ASTNodeType::COMPONENT)
     {
         int j = 0;
-        std::vector<std::string>::iterator it;
-        it = component_name.begin();
-        while (it != component_name.end())
-            if (*it == (*node.children)[1]->lexeme)
-                j++;
+        for (std::vector<std::string>::iterator it = component_name.begin(); it != component_name.end(); ++it)
+	  {
+	    if (*it == (*node.children)[1]->lexeme)
+	      j++;
+	  }
         if (j >= 2)
             throw Error("Lexeme: Same component name used twice", -1);
     }
+  unsigned int j = 0;
   std::cout<< node.lexeme <<  " i = " << i <<std::endl;
 
-  if (((node.children) != NULL) && !(*node.children)[i]->check)
-    checker((*(*node.children)[i]), i);
-  else if (node.children!= NULL && i + 1 <= (*node.children).size() && !(*node.children)[i + 1]->check)
-    checker((*(*node.children)[i]), i + 1);
+  while (((node.children) != NULL) && j < (*node.children).size() && !(*node.children)[j]->check)
+    {
+      checker((*(*node.children)[j]), j);
+      ++j;
+    }
   return 0;
 }
 
@@ -72,12 +74,14 @@ static char tab_to_space(char ch)
   return ch == '\t' ? ' ' : ch;
 }
 
-void nts::Parser::lexer(std::string input)
+void nts::Parser::lexer(std::string const &input)
 {
-  std::string     line;
+  std::string	tmp;
+  std::string	line;
 
-  std::transform(line.begin(), line.end(), line.begin(), &tab_to_space);
-  std::unique_copy(input.begin(), input.end(), std::back_inserter(line), &space_supr);
+  tmp = input;
+  std::transform(tmp.begin(), tmp.end(), tmp.begin(), &tab_to_space);
+  std::unique_copy(tmp.begin(), tmp.end(), std::back_inserter(line), &space_supr);
   if (line[0] == ' ')
     line = line.substr(1);
   line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
@@ -101,7 +105,7 @@ void nts::Parser::lexer(std::string input)
       default:
 	{
 	  if (current->type == nts::ASTNodeType::SECTION && current->lexeme == ".chipsets:")
-	    create_tree(line.substr(0, line.find(" ")), nts::ASTNodeType::COMPONENT);
+	    create_tree(line, nts::ASTNodeType::COMPONENT);
 	  else if (current->type == nts::ASTNodeType::SECTION && current->lexeme == ".links:")
 	    create_tree(line, nts::ASTNodeType::LINK);
 	  else
@@ -110,7 +114,7 @@ void nts::Parser::lexer(std::string input)
     }
 }
 
-std::vector<struct s_ast_node*> * nts::Parser::create_components(std::string lexeme, nts::ASTNodeType type)
+std::vector<struct nts::s_ast_node*> * nts::Parser::create_components(std::string lexeme, nts::ASTNodeType type)
 {
   std::vector<struct s_ast_node*> *tmp;
   t_ast_node *node;
@@ -125,13 +129,13 @@ std::vector<struct s_ast_node*> * nts::Parser::create_components(std::string lex
 	  if ((pos = lexeme.find_first_of(' ')) == std::string::npos)
 	    throw Error("Lexer: no component name", -1);
 	  substr = lexeme.substr(0, pos);
-	  node = new t_ast_node(create_links(substr, ASTNodeType::STRING));
+	  node = new t_ast_node(create_components(substr, ASTNodeType::STRING));
 	  node->lexeme = substr;
 	  node->type = ASTNodeType::STRING;
 	  tmp->push_back(node);
 	  substr = lexeme.substr(pos + 1);
-        component_name.push_back(substr);
-	  node = new t_ast_node(create_links(substr, ASTNodeType::STRING));
+	  component_name.push_back(substr);
+	  node = new t_ast_node(create_components(substr, ASTNodeType::STRING));
 	  node->lexeme = substr;
 	  node->type = ASTNodeType::STRING;
 	  tmp->push_back(node);
@@ -146,7 +150,7 @@ std::vector<struct s_ast_node*> * nts::Parser::create_components(std::string lex
   return (tmp);
 }
 
-std::vector<struct s_ast_node*> * nts::Parser::create_links(std::string lexeme, nts::ASTNodeType type)
+std::vector<struct nts::s_ast_node*> * nts::Parser::create_links(std::string lexeme, nts::ASTNodeType type)
 {
   std::vector<struct s_ast_node*> *tmp;
   t_ast_node *node;
@@ -218,6 +222,7 @@ void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
 	  node->children = new std::vector<struct s_ast_node*>;
 	  this->current = node;
 	  this->root->children->push_back(node);
+	  break;
 	}
       case (ASTNodeType::LINK) :
 	{
