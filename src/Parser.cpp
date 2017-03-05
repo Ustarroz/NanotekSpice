@@ -4,13 +4,11 @@
 
 #include <algorithm>
 #include "Parser.hpp"
-
+#include "Error.hpp"
 nts::Parser::Parser()
 {
-  nts::t_ast_node *first;
-
-  first = new nts::t_ast_node;
-  this->root = first;
+    this->current = new t_ast_node;
+    this->root =    new t_ast_node *;
 }
 
 void nts::Parser::feed(std::string const &strong)
@@ -24,26 +22,45 @@ void nts::Parser::feed(std::string const &strong)
    lexer(strong);
 }
 
-void nts::Parser::parseTree(nts::t_ast_node &root)
+int nts::Parser::checker(nts::t_ast_node &node, int i)
 {
+    if (!node.check)
+        node.check = true;
+    else
+        return -1;
+    if (!(*node.children)[i]->check)
+        checker(node, i);
+    else if (i < (*node.children).size())
+        checker(node, ++i);
+    else
+        throw Error("Error in parsing tree", -1);
+    return 0;
+}
 
+void nts::Parser::parseTree(nts::t_ast_node &root)
+    {
+        if (((*root.children)[0]->lexeme != ".chipsets:"
+            && (*root.children)[1]->lexeme != ".links:")
+            || ((*root.children)[0]->lexeme != ".links:"
+               && (*root.children)[1]->lexeme != ".chipset:"))
+            throw Error("Lexer: Information file not complete", -1);
+        if (root.lexeme == "" && root.value == "")
+            throw Error ("Lexer: Information file not complete", -1);
+        checker(root, 0);
 }
 
 nts::t_ast_node *nts::Parser::createTree()
 {
-  //nts::t_ast_node *ret = nullptr;
-
-  return this->root;
+  return *root;
 }
 
 void nts::Parser::lexer(std::string input)
 {
     std::string::size_type n = 0;
-
     if (input[0] == ' ')
-        std::replace(input.begin(), input.end(), ' ', '');
-    std::replace(input.begin(), input.end(), '\t', '');
-    std::replace(input.begin(), input.end(), '\n', '');
+        input.erase(std::remove(input.begin(), input.end(), ' '), input.end());
+    input.erase(std::remove(input.begin(), input.end(), '\t'), input.end());
+    input.erase(std::remove(input.begin(), input.end(), '\n'), input.end());
     switch (input[0])
     {
         case '.':
@@ -62,68 +79,67 @@ void nts::Parser::lexer(std::string input)
         }
         case 'i':
         {
-            if (root->type == (ASTNodeType) 1);
+            if ((*root)->type == (ASTNodeType) 1)
             {
-                if (root->lexeme == ".chipset:")
+                if ((*root)->lexeme == ".chipset:")
                 {
-                    //RESET CURSEUR
+                    current = *root;
                 }
                     create_tree(input.substr(n, 5), (ASTNodeType) 2);
                 }
-                if (root->lexeme == ".links:")
+                if ((*root)->lexeme == ".links:")
                 {
-                    // RESET CURSEUR
+                    current = *root;
                     create_tree(input.substr(n, 5), (ASTNodeType) 3);
                 }
             break;
         }
         default:
         {
-            create_tree(input, root->type);
+            create_tree(input, current->type);
         if (input.find(":") == -1)
         {
-        create_tree(input.substr(0, input.find(" ")), root->type);
-            create_tree(input.substr(input.find("")), root->type);
-            //RESET CURSEUR VERS .CHIPSET
+            create_tree(input.substr(0, input.find(" ")), current->type);
+            create_tree(input.substr(input.find("")), current->type);
+            if ((*(*root)->children)[0]->lexeme == ".chipset:")
+                current = (*(*root)->children)[0];
+            else
+                current = (*(*root)->children)[1];
         }
             else
-            create_tree(input.substr(0, input.find(" ")), root->type);
-            create_tree(input.substr(input.find(" ")), root->type);
-            //RESET CURSEUR VERS .LINKS
+            create_tree(input.substr(0, input.find(" ")), current->type);
+            create_tree(input.substr(input.find(" ")), current->type);
+            if ((*(*root)->children)[0]->lexeme == ".links:")
+            current = (*(*root)->children)[0];
+            else
+            current = (*(*root)->children)[1];
         }
-            break;
     }
 }
 
-void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
-{
-    nts::t_ast_node	                    *tmp = nullptr;
-    nts::t_ast_node                     *son = nullptr;
-    nts::t_ast_node                     *daughter = nullptr;
+void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type) {
+    nts::t_ast_node *tmp = new t_ast_node;
+    nts::t_ast_node *son = new t_ast_node;
+    nts::t_ast_node *daughter = new t_ast_node;
 
-    tmp ,son, daughter = new nts::t_ast_node;
-    if (lexeme.find(" ") != -1)
-    {
+    if (lexeme.find(" ") != -1) {
         tmp->lexeme = lexeme;
         tmp->type = type;
-    }
-    else
-    {
+    } else {
         tmp->lexeme = lexeme;
-        if (root->lexeme == ".chipset:")
+        if (current->lexeme == ".chipset:")
             tmp->type = (ASTNodeType) 2;
-        if (root->lexeme == ".links")
+        if (current->lexeme == ".links")
             tmp->type = (ASTNodeType) 3;
-        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() -1);
-        {
+        if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1)
             daughter->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
-        }
+        else if ((lexeme.find ("(") != -1 && lexeme.find(")") > 0) || (lexeme.find("(") > 0 && lexeme.find(")") == -1))
+            throw Error("Lexer: error, Synthax errror", -1);
         son->lexeme = lexeme.substr(0, lexeme.find(":"));
         son->type = (ASTNodeType) 4;
         daughter->lexeme = lexeme;
         daughter->type = (ASTNodeType) 4;
     }
-    root->children->push_back(tmp);
-    root = tmp;
+    current->children->push_back(tmp);
+    current = tmp;
 }
-

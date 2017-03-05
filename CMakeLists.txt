@@ -9,7 +9,7 @@ include_directories(include)
 set(SOURCE_FILES
         main.cpp
         src/AComponent.cpp
-        ##src/Parser.cpp
+        src/Parser.cpp
         src/Component4001.cpp
         src/Component4008.cpp
         src/Component4011.cpp
@@ -29,13 +29,14 @@ set(SOURCE_FILES
         src/ComponentInput.cpp
         src/ComponentOutput.cpp
         src/ComponentTrue.cpp
-        src/ComponentFalse.cpp)
+        src/ComponentFalse.cpp
+        src/Error.cpp)
 
 set(INCLUDE_FILES
         include/ICcomponent.hpp
         include/AComponent.hpp
-        ##include/IParser.hpp
-        ##include/Parser.hpp
+        include/IParser.hpp
+        include/Parser.hpp
         include/Component4001.hpp
         include/Component4008.hpp
         include/Component4011.hpp
@@ -55,6 +56,7 @@ set(INCLUDE_FILES
         include/ComponentInput.hpp
         include/ComponentOutput.hpp
         include/ComponentTrue.hpp
-        include/ComponentFalse.hpp include/Circuit.hpp src/Circuit.cpp)
+        include/ComponentFalse.hpp include/Circuit.hpp src/Circuit.cpp
+        include/Error.hpp)
 
 add_executable(nanotekspice ${SOURCE_FILES} ${INCLUDE_FILES})
