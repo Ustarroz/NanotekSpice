@@ -12,6 +12,7 @@ nts::Parser::Parser()
     this->current = root;
  current->children = new std::vector<nts::t_ast_node *>;
     this->root->type = (ASTNodeType) -1;
+
 }
 
 void nts::Parser::feed(std::string const &strong)
@@ -108,47 +109,29 @@ void nts::Parser::lexer(std::string input)
 void nts::Parser::create_tree(std::string lexeme, nts::ASTNodeType type)
 {
     nts::t_ast_node *tmp = new nts::t_ast_node;
-    nts::t_ast_node *daughter = new nts::t_ast_node;
     nts::t_ast_node *son = new nts::t_ast_node;
-    nts::t_ast_node *value = new nts::t_ast_node;
 
-            tmp->lexeme = lexeme;
-            tmp->type = type;
-            if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1)
-            {
-                daughter->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
-                daughter->type = (ASTNodeType) 4;
-                current->children->push_back(daughter);
-            }
-        else if ((lexeme.find_first_of('(') == std::string::npos && lexeme.find_first_of(')') != std::string::npos) ||
-                (lexeme.find_first_of('(') != std::string::npos && lexeme.find_first_of(')') == std::string::npos))
+    if (lexeme.find(" ") == std::string::npos)
+        throw Error("Lexer: Synthax Error", -1);
+    tmp->lexeme = lexeme;
+    tmp->type = type;
+    if (lexeme.find("(") != -1 && lexeme.find(")") != -1 && lexeme.find(")") == lexeme.size() - 1)
+    {
+        tmp->value = lexeme.substr(lexeme.find("(") + 1, lexeme.find(")") - 1);
+        tmp->type = nts::ASTNodeType::COMPONENT;
+        current->children->push_back(tmp);
+    }
+    else if ((lexeme.find_first_of('(') == std::string::npos && lexeme.find_first_of(')') != std::string::npos) ||
+             (lexeme.find_first_of('(') != std::string::npos && lexeme.find_first_of(')') == std::string::npos))
             throw Error("Lexer: error, Synthax errror", -1);
 
-    if (type == (ASTNodeType) 0)
-    {
-        son->lexeme = lexeme.substr(0, lexeme.find(":") -1);
-        son->type = (ASTNodeType) 4;
-        daughter->lexeme = lexeme.substr(lexeme.find(":") + 1, lexeme.find(" ") - 1);
-        daughter->type = (ASTNodeType) 4;
-        (*current->children)[0]->children->push_back(son);
-        (*current->children)[0]->children->push_back(daughter);
-        lexeme.replace(0, lexeme.find(" ") - 1, "");
-        tmp->lexeme = lexeme.substr(lexeme.find(" ") + 1, lexeme.find(":") - 1);
-        tmp->type = (ASTNodeType) 4;
-        value->lexeme = lexeme.substr(lexeme.find(":") + 1);
-        value->type = (ASTNodeType) 4;
-        (*current->children)[1]->children->push_back(tmp);
-        (*current->children)[1]->children->push_back(value);
+        tmp->lexeme = lexeme.substr(0, lexeme.find(" ") - 1);
+        tmp->type = nts::ASTNodeType::COMPONENT;
+        son->lexeme = lexeme.substr(lexeme.find(" ") + 1);
+        son->type = nts::ASTNodeType ::COMPONENT;
     }
-
-    if (lexeme.find(":") != -1 && lexeme.find(" ") != -1 && type != (ASTNodeType) 0)
-    {
-        son->lexeme = lexeme.substr(0, lexeme.find(" "));
-        son->type = (ASTNodeType) 3;
-        daughter->lexeme = lexeme.substr(lexeme.find(" ") + 1);
-        daughter->type = (ASTNodeType) 3;
-    }
-
+    if (current->lexeme != ".chipsets:")
+    throw
     if (current->children == NULL)
         current->children = new std::vector<t_ast_node *>;
     current->children->push_back(tmp);

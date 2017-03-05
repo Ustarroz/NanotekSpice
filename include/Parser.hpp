@@ -15,6 +15,7 @@ namespace nts
   {
         t_ast_node *root;
       t_ast_node *current;
+
    public:
 
       Parser();
