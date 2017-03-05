@@ -21,6 +21,7 @@ set(SOURCE_FILES
         src/GateOr.cpp
         src/GateAnd.cpp
         src/GateNot.cpp
+        src/GateNull.cpp
         src/GateXor.cpp
         src/GateNOr.cpp
         src/GateNAnd.cpp
@@ -48,6 +49,7 @@ set(INCLUDE_FILES
         include/GateOr.hpp
         include/GateAnd.hpp
         include/GateNot.hpp
+        include/GateNull.hpp
         include/GateXor.hpp
         include/GateNOr.hpp
         include/GateNAnd.hpp

@@ -11,7 +11,8 @@ namespace nts
 {
   class Component4008 : public nts::AComponent
   {
-    void createFullAdder(size_t pin_a, size_t pin_b, size_t pin_c, size_t res, size_t carry_out);
+    AComponent *createFullAdder(size_t pin_a, size_t pin_b, size_t pin_c, size_t res, size_t carry_out,
+				   AComponent *prev, size_t prev_carry);
    public:
     Component4008(std::string const &name = "");
   };
